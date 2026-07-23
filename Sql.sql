@@ -241,6 +241,7 @@ SELECT MIN(order_date), MAX(order_date) FROM fact_order_items;
 
 SELECT SUM(total_sales) FROM fact_order_items;
 
+/* Top ten customers by revenue */
 SELECT
     product_id,
     SUM(total_sales) AS revenue,
@@ -250,6 +251,7 @@ GROUP BY product_id
 ORDER BY revenue DESC
 LIMIT 10;
 
+/* Top 10 customers by Spend */
 SELECT
     customer_id,
     SUM(total_sales) AS revenue,
@@ -259,7 +261,41 @@ GROUP BY customer_id
 ORDER BY revenue DESC
 limit 10;
 
+/* Revenue by City */
+show tables;
+desc dim_customers;
+desc fact_order_items;
 
+Select c.customer_city ,
+c.customer_state ,
+sum(total_sales) as revenue
+from fact_order_items f
+Join  dim_customers c ON f.customer_id = c.customer_id
+group by c.customer_city , c.customer_state
+order by revenue desc;
 
+/* Monthly Sales Trend*/
+Select year , month ,
+sum(total_sales) as revenue
+from fact_order_items 
+group by year, month 
+order by year ,month ;
+
+/* Average Order Value */
+SELECT AVG(order_total) AS avg_order_value
+FROM (
+    SELECT order_id, SUM(total_sales) AS order_total
+    FROM fact_order_items
+    GROUP BY order_id
+) AS order_totals;
  
+ /* Best Selling category */
+ show Tables ;
+ desc fact_order_items ;
+ desc dim_products;
+ Select p.product_category_name_english ,
+sum(total_sales) as revenue from dim_products p
+Join fact_order_items f on f.product_id = p.product_id 
+group by p.product_category_name_english
+order by revenue desc;
  
